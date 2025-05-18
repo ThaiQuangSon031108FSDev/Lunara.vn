@@ -217,7 +217,7 @@
       if(!name.checkValidity()) return alert('Nhập họ tên!'); if(!phone.checkValidity()) return alert('SĐT không hợp lệ!'); if(!address.checkValidity()) return alert('Nhập địa chỉ!');
       const note = document.getElementById('note').value;
       const order = { customer:{name:name.value,phone:phone.value,address:address.value,note}, items:cart };
-      fetch('http://localhost:3000/api/orders',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(order) })
+      fetch('https://lunara-vn.onrender.com/api/orders',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(order) })
         .then(r=>r.json()).then(d=>{ alert('Đặt hàng thành công mã: '+d.orderId); cart=[]; updateCart(); cartModal.classList.remove('open'); orderBtn.style.display='block'; })
         .catch(()=>alert('Lỗi, thử lại!'));
     });
