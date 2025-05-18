@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LUNARA Shop - Vòng tay may mắn, pha lê Swarovski, dây da thật, hộp quà Premium. Đặt hàng nhanh, giao tận nơi.">
+  <title>LUNARA Shop - Vòng tay may mắn</title>
+  <style>
+    :root { --beige: #F0DEBD; --gold: #B58E35; --brown: #5A4230; --font-serif: 'Playfair Display', serif; --font-sans: Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--beige); color: var(--brown); }
+    header, main, section, footer { max-width: 1200px; margin: auto; }
+    /* Carousel */
+    .carousel { position: relative; overflow: hidden; height: 50vh; }
+    .carousel img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .carousel img.active { display: block; }
+    .carousel .dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+    .carousel .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.7); cursor: pointer; }
+    .carousel .dot.active { background: var(--gold); }
+    /* Navigation */
+    nav { background: var(--brown); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: relative; }
+    nav h1 { font-family: var(--font-serif); font-size: 28px; }
+    nav a { color: white; text-decoration: none; margin-left: 15px; font-weight: bold; }
+    /* Cart Modal */
+    .cart { position: relative; }
+    .cart-btn { background: var(--gold); color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    #cart-modal { display: none; color: var(--brown); position: absolute; top: 50px; right: 0; width: 360px; max-height: 80vh; overflow-y: auto; background: white; border: 1px solid var(--brown); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); padding: 20px; z-index: 100; }
+    #cart-modal.open { display: block; }
+    #cart-modal h4 { margin: 0 0 20px; font-family: var(--font-serif); font-size: 18px; color: var(--brown); }
+    .cart-item { display: flex; align-items: center; margin-bottom: 16px; }
+    .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; background: var(--beige); }
+    .item-info { flex: 1; margin: 0 12px; }
+    .item-info p { margin: 0 0 4px; font-size: 14px; }
+    .qty-controls { display: flex; align-items: center; gap: 8px; }
+    .qty-controls button { width: 28px; height: 28px; border: 1px solid var(--brown); background: white; color: var(--brown); cursor: pointer; border-radius: 4px; font-size: 16px; }
+    .qty-controls span { width: 24px; text-align: center; font-size: 14px; }
+    .cart-total { text-align: right; font-size: 16px; margin: 20px 0; }
+    .order-btn { background: var(--gold); color: white; width: 100%; padding: 14px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+    .order-form { display: none; margin-top: 20px; }
+    .order-form label { display: block; margin-bottom: 6px; font-size: 14px; }
+    .order-form input, .order-form textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 12px; }
+    .submit-btn { background: var(--brown); color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 14px; }
+    .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+    /* Products */
+    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
+    .product { background: white; border-radius: 8px; overflow: hidden; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .product:hover { transform: translateY(-5px); }
+    .product img { width: 100%; height: 200px; object-fit: cover; }
+    .product h3 { margin: 10px 0; font-family: var(--font-serif); color: var(--gold); }
+    .product p { font-weight: bold; margin: 5px 0; }
+    .product button { background: var(--gold); border: none; padding: 10px; cursor: pointer; color: white; width: 100%; font-weight: bold; }
+    /* Features & Footer */
+    .features { display: flex; justify-content: center; gap: 30px; padding: 30px; }
+    .feature { text-align: center; max-width: 150px; }
+    .feature-icon { font-size: 36px; color: var(--gold); margin-bottom: 10px; }
+    footer { background: var(--brown); color: white; padding: 20px; text-align: center; font-size: 14px; margin-top: 30px; }
+    footer a { color: var(--gold); text-decoration: none; }
+    @media (max-width: 600px) { .features { flex-direction: column; gap: 20px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="carousel" id="banner" tabindex="0">
+      <img src="banner1.png" class="active" alt="Banner 1" loading="lazy">
+      <img src="banner2.png" alt="Banner 2" loading="lazy">
+      <img src="banner3.png" alt="Banner 3" loading="lazy">
+      <div class="dots" id="dots" role="tablist"></div>
+    </div>
+    <nav>
+      <h1>LUNARA</h1>
+      <div>
+        <a href="#">Trang chủ</a>
+        <a href="#">Sản phẩm</a>
+        <a href="#">Liên hệ</a>
+      </div>
+      <div class="cart">
+        <button class="cart-btn" id="cart-btn">Giỏ (<span id="cart-count">0</span>)</button>
+        <div id="cart-modal">
+          <h4>Giỏ hàng</h4>
+          <div id="cart-items"></div>
+          <div class="cart-total">Tổng tiền: <span id="cart-total">0 đ</span></div>
+          <button class="order-btn" id="order-btn">ĐẶT HÀNG</button>
+          <div class="order-form" id="order-form">
+            <label for="name">Họ & Tên:</label>
+            <input type="text" id="name" placeholder="Nhập họ và tên" required>
+            <label for="phone">Số điện thoại:</label>
+            <input type="tel" id="phone" placeholder="Nhập số điện thoại" pattern="\d{10,11}" required>
+            <label for="address">Địa chỉ nhận hàng:</label>
+            <textarea id="address" rows="2" placeholder="Địa chỉ chi tiết" required></textarea>
+            <label for="note">Ghi chú thêm:</label>
+            <textarea id="note" rows="2" placeholder="Ghi chú (nếu có)"></textarea>
+            <button type="button" class="submit-btn" id="submit-btn" disabled>Xác nhận đơn hàng</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <section class="features">
+    <div class="feature">
+      <div class="feature-icon">✨</div>
+      <p>Pha lê Swarovski chính hãng</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">💼</div>
+      <p>Dây da thật cao cấp</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🎁</div>
+      <p>Hộp quà Premium kèm tag</p>
+    </div>
+  </section>
+  <main>
+    <section class="products" id="product-list"></section>
+  </main>
+  <footer>
+    <p>© 2025 LUNARA Shop - Hotline: 0905 123 456 | <a href="#">Chính sách bảo hành</a> | <a href="#">Chính sách đổi trả</a></p>
+  </footer>
+  <script>
+    // -- Carousel setup --
+    const banner = document.getElementById('banner');
+    const slides = banner.querySelectorAll('img');
+    const dotsContainer = document.getElementById('dots');
+    let currentSlide = 0, interval;
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div'); dot.className = 'dot'; dot.setAttribute('role','tab'); dot.setAttribute('aria-label',`Slide ${i+1}`);
+      dot.addEventListener('click', () => showSlide(i)); dotsContainer.appendChild(dot);
+    });
+    const dots = dotsContainer.querySelectorAll('.dot'); dots[0].classList.add('active');
+    function showSlide(idx) {
+      slides[currentSlide].classList.remove('active'); dots[currentSlide].classList.remove('active');
+      currentSlide = idx; slides[currentSlide].classList.add('active'); dots[currentSlide].classList.add('active');
+    }
+    function nextSlide() { showSlide((currentSlide+1) % slides.length); }
+    function startAuto() { interval = setInterval(nextSlide, 5000); }
+    function stopAuto() { clearInterval(interval); }
+    banner.addEventListener('mouseenter', stopAuto); banner.addEventListener('mouseleave', startAuto);
+    banner.addEventListener('focusin', stopAuto); banner.addEventListener('focusout', startAuto);
+    showSlide(0); startAuto();
+
+    // -- Products & Cart --
+    const products = [
+      {id:1,name:'Starlight Beads',price:50000,img:'img1.png'},
+      {id:2,name:'Lucky Knot',price:40000,img:'img2.png'},
+      {id:3,name:'Moon & Star Wrap',price:70000,img:'img3.png'},
+      {id:4,name:'Personal Star',price:80000,img:'img4.png'},
+      {id:5,name:'Rustic Star Mix',price:45000,img:'img5.png'}
+    ];
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartBtn = document.getElementById('cart-btn'), cartModal = document.getElementById('cart-modal'), cartItems = document.getElementById('cart-items'), cartCountEl = document.getElementById('cart-count'), cartTotalEl = document.getElementById('cart-total'), orderBtn = document.getElementById('order-btn'), orderForm = document.getElementById('order-form'), submitBtn = document.getElementById('submit-btn');
+    function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
+    function renderProducts() {
+      const list = document.getElementById('product-list'); list.innerHTML = '';
+      products.forEach(p => {
+        const div = document.createElement('div'); div.className = 'product';
+        div.innerHTML = `<img src="${p.img}" alt="${p.name}" loading="lazy" /><h3>${p.name}</h3><p>${p.price.toLocaleString()} đ</p><button onclick="addToCart(${p.id})">Thêm vào giỏ</button>`;
+        list.appendChild(div);
+      });
+    }
+    function addToCart(id) { const pr = products.find(p=>p.id===id); const it = cart.find(i=>i.id===id); if(it) it.qty++; else cart.push({...pr,qty:1}); updateCart(); }
+    function changeQty(id,delta) { const idx = cart.findIndex(i=>i.id===id); if(idx<0) return; cart[idx].qty+=delta; if(cart[idx].qty<1) cart.splice(idx,1); updateCart(); }
+    function updateCart() {
+      saveCart();
+      cartItems.innerHTML = '';
+      let total = 0;
+
+      // Render each cart item explicitly to avoid template issues
+      cart.forEach(item => {
+        total += item.price * item.qty;
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+
+        // Product image
+        const imgEl = document.createElement('img');
+        imgEl.src = item.img;
+        imgEl.alt = item.name;
+        itemDiv.appendChild(imgEl);
+
+        // Info (name)
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'item-info';
+        const nameP = document.createElement('p');
+        nameP.textContent = item.name;
+        infoDiv.appendChild(nameP);
+        itemDiv.appendChild(infoDiv);
+
+        // Quantity controls
+        const qtyDiv = document.createElement('div');
+        qtyDiv.className = 'qty-controls';
+        const minusBtn = document.createElement('button'); minusBtn.textContent = '-'; minusBtn.onclick = () => changeQty(item.id, -1);
+        const qtySpan = document.createElement('span'); qtySpan.textContent = item.qty;
+        const plusBtn = document.createElement('button'); plusBtn.textContent = '+'; plusBtn.onclick = () => changeQty(item.id, 1);
+        qtyDiv.appendChild(minusBtn);
+        qtyDiv.appendChild(qtySpan);
+        qtyDiv.appendChild(plusBtn);
+        itemDiv.appendChild(qtyDiv);
+
+        // Price
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'item-price';
+        priceDiv.textContent = (item.price * item.qty).toLocaleString() + ' đ';
+        itemDiv.appendChild(priceDiv);
+
+        cartItems.appendChild(itemDiv);
+      });
+
+      cartCountEl.innerText = cart.reduce((sum, i) => sum + i.qty, 0);
+      cartTotalEl.innerText = total.toLocaleString() + ' đ';
+      submitBtn.disabled = cart.length === 0;
+    }
+
+    cartBtn.addEventListener('click', ()=>{ cartModal.classList.toggle('open'); orderForm.style.display='none'; });
+    document.addEventListener('click', e=>{ if(!cartModal.contains(e.target)&&e.target!==cartBtn) cartModal.classList.remove('open'); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') cartModal.classList.remove('open'); });
+    orderBtn.addEventListener('click', ()=>{ orderForm.style.display='block'; orderBtn.style.display='none'; });
+    submitBtn.addEventListener('click', ()=>{
+      const name = document.getElementById('name'), phone = document.getElementById('phone'), address = document.getElementById('address');
+      if(!name.checkValidity()) return alert('Nhập họ tên!'); if(!phone.checkValidity()) return alert('SĐT không hợp lệ!'); if(!address.checkValidity()) return alert('Nhập địa chỉ!');
+      const note = document.getElementById('note').value;
+      const order = { customer:{name:name.value,phone:phone.value,address:address.value,note}, items:cart };
+      fetch('http://localhost:3000/api/orders',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(order) })
+        .then(r=>r.json()).then(d=>{ alert('Đặt hàng thành công mã: '+d.orderId); cart=[]; updateCart(); cartModal.classList.remove('open'); orderBtn.style.display='block'; })
+        .catch(()=>alert('Lỗi, thử lại!'));
+    });
+    window.onload = ()=>{ renderProducts(); updateCart(); };
+  </script>
+</body>
+</html>

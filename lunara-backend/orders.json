@@ -1,0 +1,54 @@
+[
+  {
+    "customer": {
+      "name": "Thái Quang Sơn",
+      "phone": "0703112977",
+      "address": "ccc",
+      "note": "cc"
+    },
+    "items": [
+      {
+        "id": 3,
+        "name": "Moon & Star Wrap",
+        "price": 70000,
+        "img": "img3.png",
+        "qty": 6
+      },
+      {
+        "id": 4,
+        "name": "Personal Star",
+        "price": 80000,
+        "img": "img4.png",
+        "qty": 3
+      },
+      {
+        "id": 1,
+        "name": "Starlight Beads",
+        "price": 50000,
+        "img": "img1.png",
+        "qty": 1
+      }
+    ],
+    "id": 1747610134157,
+    "createdAt": "2025-05-18T23:15:34.157Z"
+  },
+  {
+    "customer": {
+      "name": "LAB 2- CSDL",
+      "phone": "0935313559",
+      "address": "111",
+      "note": "111"
+    },
+    "items": [
+      {
+        "id": 2,
+        "name": "Lucky Knot",
+        "price": 40000,
+        "img": "img2.png",
+        "qty": 1
+      }
+    ],
+    "id": 1747610195757,
+    "createdAt": "2025-05-18T23:16:35.757Z"
+  }
+]
